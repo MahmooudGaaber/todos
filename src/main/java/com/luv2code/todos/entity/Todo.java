@@ -27,16 +27,19 @@ public class Todo {
     @Column(nullable = false)
     private  boolean complete ;
 
-    // private User owner;
+    @ManyToOne(fetch = FetchType.LAZY )
+    @JoinColumn(name = "owner_id",nullable = false)
+     private User owner;
 
 
     public Todo() {}
 
-    public Todo(String title, String description, int priority, boolean complete) {
+    public Todo(String title, String description, int priority, boolean complete, User owner) {
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.complete = complete;
+        this.owner = owner;
     }
 
     public long getId() {
@@ -77,5 +80,13 @@ public class Todo {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }

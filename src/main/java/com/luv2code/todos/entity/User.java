@@ -2,6 +2,8 @@ package com.luv2code.todos.entity;
 
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -32,12 +34,20 @@ public class User implements UserDetails {
 
 
     @Column(updatable = false , name = "create_at")
+    @CreationTimestamp
     private Date createdAt;
 
     @Column( name = "updated_at")
+    @UpdateTimestamp
     private Date updatedAt;
 
-    // private List<Todo> todos;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_authorities" , joinColumns = @JoinColumn(name = "user_id"))
+    private List<Authorities> authorities;
+
+
+    @OneToMany(mappedBy = "owner" , cascade = CascadeType.ALL , orphanRemoval = true)
+     private List<Todo> todos;
 
     public User() {
     }
@@ -59,7 +69,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return authorities;
     }
 
     @Override
@@ -128,4 +138,7 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    public void setAuthorities(List<Authorities> authorities) {
+        this.authorities = authorities;
+    }
 }
