@@ -1,8 +1,15 @@
 package com.luv2code.todos.service;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.security.Key;
+import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -12,7 +19,7 @@ public class JwtServiceImpl implements JwtService {
     private String SECRET_KEY;
 
     @Value("${spring.jwt.expiration}")
-    private long JWTEXPIRATION;
+    private long JWT_EXPIRATION;
 
     @Override
     public String extractUsername(String token) {
@@ -26,6 +33,17 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(Map<String, Object> claims, UserDetails userDetails) {
-        return "";
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis()+JWT_EXPIRATION))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
