@@ -66,7 +66,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http)throws Exception {
         http.authorizeHttpRequests(
                 configuer-> configuer
-                        .requestMatchers("/docs/**","/swagger-ui/**","/v3/api-docs/**","/swagger-resources/**","/webjars/**").permitAll());
+                        .requestMatchers("/docs/**","/swagger-ui/**","/v3/api-docs/**","/swagger-resources/**","/webjars/**","/api/auth/**").permitAll());
                 http.csrf(csrf -> csrf.disable());
         http.exceptionHandling(
                 exceptionHandlingError -> exceptionHandlingError
