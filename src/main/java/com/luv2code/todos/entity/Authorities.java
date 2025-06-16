@@ -19,7 +19,7 @@ public class Authorities implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return "";
+        return authority;
     }
 
 
