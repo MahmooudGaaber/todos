@@ -6,4 +6,6 @@ import com.luv2code.todos.response.UserResponse;
 public interface UserService {
 
     UserResponse getUserInfo();
+
+    void deleteUser();
 }

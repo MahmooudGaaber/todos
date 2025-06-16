@@ -3,6 +3,7 @@ package com.luv2code.todos.controller;
 import com.luv2code.todos.entity.User;
 import com.luv2code.todos.response.UserResponse;
 import com.luv2code.todos.service.UserService;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,11 @@ public class UserController {
     @GetMapping("/info")
     public UserResponse getUserInfo(){
         return  userService.getUserInfo();
+    }
+
+    @DeleteMapping
+    public void deleteUser(){
+        userService.deleteUser();
     }
 }
 
