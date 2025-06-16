@@ -1,6 +1,8 @@
 package com.luv2code.todos.controller;
 
+import com.luv2code.todos.request.AuthenticationRequest;
 import com.luv2code.todos.request.RegisterRequest;
+import com.luv2code.todos.response.AuthenticationResponse;
 import com.luv2code.todos.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +29,11 @@ public class AuthenticationController {
         authenticationService.register(registerRequest);
     }
 
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthenticationResponse login(@Valid @RequestBody AuthenticationRequest request){
+        return authenticationService.login(request);
+    }
 
 
 }
