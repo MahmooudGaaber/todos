@@ -4,6 +4,7 @@ import com.luv2code.todos.entity.Authorities;
 import com.luv2code.todos.entity.User;
 import com.luv2code.todos.repository.UserRepository;
 import com.luv2code.todos.response.UserResponse;
+import com.luv2code.todos.util.FindAuthenticatedUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -14,20 +15,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private final FindAuthenticatedUser findAuthenticatedUser;
     private final UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(FindAuthenticatedUser findAuthenticatedUser, UserRepository userRepository) {
+        this.findAuthenticatedUser = findAuthenticatedUser;
         this.userRepository = userRepository;
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserResponse getUserInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymouseUser")){
-            throw new AccessDeniedException("Authentication required");
-        }
-        User user = (User) authentication.getPrincipal();
+        User user = findAuthenticatedUser.getAuthenticatedUser();
         return new UserResponse(
                 user.getId(),
                 user.getAuthorities().stream().map(auth -> (Authorities) auth).toList(),
@@ -38,17 +37,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser() {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymouseUser")){
-            throw new AccessDeniedException("Authentication required");
-        }
-        User user = (User) authentication.getPrincipal();
-
+        User user = findAuthenticatedUser.getAuthenticatedUser();
         if(isLastAdmin(user)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Admin can't delete itself");
         }
-
         userRepository.delete(user);
     }
 
