@@ -5,10 +5,13 @@ import com.luv2code.todos.repository.TodoRepository;
 import com.luv2code.todos.request.TodoRequest;
 import com.luv2code.todos.response.TodoResponse;
 import com.luv2code.todos.util.FindAuthenticatedUser;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TodoServiceImpl implements TodoService {
@@ -42,8 +45,20 @@ public class TodoServiceImpl implements TodoService {
     @Transactional(readOnly = true)
     public List<TodoResponse> getAllTodos() {
         User crruentUser = findAuthenticatedUser.getAuthenticatedUser();
-
         return todoRepository.findByOwner(crruentUser).stream().map(this::covertToTodoResponse).toList();
+    }
+
+    @Override
+    @Transactional
+    public TodoResponse toggleTodoCompletion(long id) {
+        User crruentUser = findAuthenticatedUser.getAuthenticatedUser();
+        Optional<Todo> todo = todoRepository.findByIdAndOwner(id,crruentUser);
+        if(todo.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Todo Not Found");
+        }
+        todo.get().setComplete(!todo.get().isComplete());
+        Todo updatedTodo = todoRepository.save(todo.get());
+        return covertToTodoResponse(updatedTodo);
     }
 
     private TodoResponse covertToTodoResponse(Todo todo){
