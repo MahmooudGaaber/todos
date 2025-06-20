@@ -40,14 +40,19 @@ public class TodoController {
     }
 
 
-    @Operation(summary = "Get ALL Todo For Users" , description = "Only Signed Users")
+    @Operation(summary = "Change Todo Completion" , description = "Only Signed Users")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
     public TodoResponse toggleTodoCompletion(@PathVariable @Min(1) long id ){
         return  todoService.toggleTodoCompletion(id);
     }
 
-
+    @Operation(summary = "Get ALL Todo For Users" , description = "Only Signed Users")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void deleteTodo(@PathVariable @Min(1) long id ){
+          todoService.deleteTodo(id);
+    }
 
 }
 
