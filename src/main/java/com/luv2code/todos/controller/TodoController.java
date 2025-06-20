@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/todos")
 @Tag(name = "Todo Rest API endpoints")
@@ -20,10 +22,6 @@ public class TodoController {
         this.todoService = todoService;
     }
 
-
-
-
-
     @Operation(summary = "Create Todo For Users" , description = "Only Signed Users")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -32,6 +30,13 @@ public class TodoController {
     }
 
 
+
+    @Operation(summary = "Get ALL Todo For Users" , description = "Only Signed Users")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public List<TodoResponse> getAllTodos(){
+        return todoService.getAllTodos();
+    }
 
 
 }

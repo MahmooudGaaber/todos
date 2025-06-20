@@ -8,6 +8,8 @@ import com.luv2code.todos.util.FindAuthenticatedUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class TodoServiceImpl implements TodoService {
 
@@ -33,14 +35,24 @@ public class TodoServiceImpl implements TodoService {
 
         Todo saveTodo = todoRepository.save(todo);
 
-        return new TodoResponse(saveTodo.getId(),
-                saveTodo.getTitle(),
-                saveTodo.getDescription(),
-                saveTodo.isComplete(),
-                saveTodo.getPriority());
+        return covertToTodoResponse(saveTodo);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<TodoResponse> getAllTodos() {
+        User crruentUser = findAuthenticatedUser.getAuthenticatedUser();
 
+        return todoRepository.findByOwner(crruentUser).stream().map(this::covertToTodoResponse).toList();
+    }
+
+    private TodoResponse covertToTodoResponse(Todo todo){
+        return new TodoResponse(todo.getId(),
+                todo.getTitle(),
+                todo.getDescription(),
+                todo.isComplete(),
+                todo.getPriority());
+    }
 
 
 }
